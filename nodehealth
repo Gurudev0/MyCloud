@@ -12,3 +12,8 @@ free -g
 
 echo"Print the cpu"
 nproc
+###############
+set -x #debugg mode shows command
+df -h
+free -g
+nproc 
