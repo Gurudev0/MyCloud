@@ -31,9 +31,9 @@ java -version
 
 # Download and Install Hadoop
 
-wget https://dlcdn.apache.org/hadoop/common/stable/hadoop-3.3.5.tar.gz
-tar -xzvf hadoop-3.3.5.tar.gz
-sudo mv hadoop-3.3.5 /usr/local/hadoop
+wget https://dlcdn.apache.org/hadoop/common/stable/hadoop-3.3.6.tar.gz
+tar -xzvf hadoop-3.3.6.tar.gz
+sudo mv hadoop-3.3.6 /usr/local/hadoop
 sudo chown -R hduser:hadoop /usr/local/hadoop
 
 # Set Enviornment Variable
@@ -122,6 +122,7 @@ sudo apt install ntp -y
 ##Configure SSH Password less logins
 sudo su -c touch /home/hduser/.ssh/config; echo "Host *\n StrictHostKeyChecking no\n
 UserKnownHostsFile=/dev/null" > /home/hduser/.ssh/config
+
 sudo service ssh restart
 
 # Configure .profile (make sure you are on NN) 
@@ -142,8 +143,26 @@ Create 4 nodes from this image
 172.31.16.236 ip-172-31-16-236.ec2.internal 3dn
 
 Do this for all nodes 
-
-
+ssh@rm 
+sudo su hduser
+nano /etc/host/
+#paste all (pvt ips) (pvt ips dns) (servername)
+exit
+ssh@1dn 
+sudo su hduser
+nano /etc/host/
+#paste all (pvt ips) (pvt ips dns) (servername)
+exit
+ssh@2dn
+sudo su hduser
+nano /etc/host/
+#paste all (pvt ips) (pvt ips dns) (servername)
+exit
+ssh@3dn
+sudo su hduser
+nano /etc/host/
+#paste all (pvt ips) (pvt ips dns) (servername)
+exit
 # Install and Configure dsh
 sudo apt install dsh -y
 sudo nano /etc/dsh/machines.list
@@ -153,8 +172,9 @@ rm
 1dn
 2dn
 3dn
-dsh -a uptime
-dsh -a source .profile
+
+$dsh -a uptime
+$dsh -a source .profile
 
 cd /usr/local/hadoop/etc/hadoop
 
@@ -242,16 +262,18 @@ sudo chown -R hduser:hadoop $HADOOP_HOME
 cd /usr/local/hadoop/etc/hadoop
 For all nodes
 scp core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml workers rm:/usr/local/hadoop/etc/hadoop
-
-
-
+scp core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml workers 1dn:/usr/local/hadoop/etc/hadoop
+scp core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml workers 2dn:/usr/local/hadoop/etc/hadoop
+scp core-site.xml hdfs-site.xml mapred-site.xml yarn-site.xml workers 3dn:/usr/local/hadoop/etc/hadoop
 #Format Namenode
 
 hdfs namenode -format
 
 
 # Start the cluster
+ssh@nn
 start-dfs.sh
+ssh@rm
 start-yarn.sh
  
 dsh -a jps
@@ -259,7 +281,7 @@ dsh -a jps
 
 hdfs dfs -mkdir /user
 hdfs dfs -mkdir /user/ubuntu
-hdfs dfs -put hadoop-3.3.4o apt .tar.gz /user/ubuntu
+hdfs dfs -put hadoop-3.3.6.tar.gz /user/ubuntu
 hdfs dfs -ls 
 hdfs dfs -ls -R
 
